@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moon Clock</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg1: #f7f1ea;
+      --bg2: #efe6dc;
+      --card: rgba(255,255,255,0.45);
+      --text: #5f564f;
+      --muted: #8b8179;
+      --accent: #d8c3b4;
+      --glow: rgba(255,255,255,0.35);
+      --shadow: 0 12px 40px rgba(120, 104, 92, 0.12);
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+      background: linear-gradient(145deg, var(--bg1), var(--bg2));
+      transition: background 0.8s ease;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .widget {
+      width: 100%;
+      max-width: 460px;
+      min-height: 260px;
+      border-radius: 28px;
+      background: var(--card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.8s ease;
+    }
+
+    .widget::before {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      top: -80px;
+      right: -60px;
+      background: radial-gradient(circle, var(--glow), transparent 70%);
+      pointer-events: none;
+      transition: all 0.8s ease;
+    }
+
+    .label {
+      font-size: 14px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .time {
+      font-size: clamp(56px, 11vw, 96px);
+      line-height: 0.95;
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      color: var(--text);
+    }
+
+    .date {
+      font-size: 18px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .phase {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.38);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 600;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
+    }
+
+    .emoji {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    /* MORNING */
+    body.morning {
+      --bg1: #f8efe3;
+      --bg2: #f3e2d1;
+      --card: rgba(255, 250, 245, 0.52);
+      --text: #685a4d;
+      --muted: #9b8a79;
+      --accent: #e3c6aa;
+      --glow: rgba(255, 245, 220, 0.55);
+      --shadow: 0 12px 36px rgba(184, 145, 111, 0.14);
+    }
+
+    /* DAY */
+    body.day {
+      --bg1: #f6f3ef;
+      --bg2: #ece7e1;
+      --card: rgba(255,255,255,0.46);
+      --text: #5a5550;
+      --muted: #87807a;
+      --accent: #d8d2ca;
+      --glow: rgba(255,255,255,0.45);
+      --shadow: 0 12px 36px rgba(110, 104, 96, 0.12);
+    }
+
+    /* EVENING */
+    body.evening {
+      --bg1: #f1e5e9;
+      --bg2: #e7d7df;
+      --card: rgba(255, 248, 251, 0.42);
+      --text: #645660;
+      --muted: #8f7d88;
+      --accent: #d9bcc8;
+      --glow: rgba(255, 232, 240, 0.45);
+      --shadow: 0 12px 36px rgba(128, 98, 116, 0.15);
+    }
+
+    /* NIGHT */
+    body.night {
+      --bg1: #232634;
+      --bg2: #181b27;
+      --card: rgba(38, 42, 60, 0.52);
+      --text: #f3ede5;
+      --muted: #b8b1aa;
+      --accent: #6e789b;
+      --glow: rgba(185, 201, 255, 0.16);
+      --shadow: 0 12px 36px rgba(5, 7, 14, 0.34);
+    }
+
+    body.night .phase {
+      background: rgba(255,255,255,0.08);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+    }
+
+    @media (max-width: 480px) {
+      .widget {
+        min-height: 220px;
+        border-radius: 24px;
+        padding: 22px 20px;
+        gap: 14px;
+      }
+
+      .label {
+        font-size: 12px;
+      }
+
+      .date {
+        font-size: 16px;
+      }
+
+      .phase {
+        font-size: 14px;
+        padding: 9px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="widget">
+    <div class="label">Moon Clock</div>
+    <div class="time" id="time">12:00</div>
+    <div class="date" id="date">Saturday, 12 July</div>
+    <div class="phase" id="phase">
+      <span class="emoji" id="phaseEmoji">🌙</span>
+      <span id="phaseText">moonlit night</span>
+    </div>
+  </div>
+
+  <script>
+    const timeEl = document.getElementById("time");
+    const dateEl = document.getElementById("date");
+    const phaseTextEl = document.getElementById("phaseText");
+    const phaseEmojiEl = document.getElementById("phaseEmoji");
+
+    function pad(num) {
+      return String(num).padStart(2, "0");
+    }
+
+    function getPhase(hour) {
+      if (hour >= 5 && hour < 12) {
+        return {
+          className: "morning",
+          emoji: "🌤️",
+          text: "soft morning"
+        };
+      } else if (hour >= 12 && hour < 17) {
+        return {
+          className: "day",
+          emoji: "☁️",
+          text: "gentle day"
+        };
+      } else if (hour >= 17 && hour < 22) {
+        return {
+          className: "evening",
+          emoji: "🌆",
+          text: "quiet evening"
+        };
+      } else {
+        return {
+          className: "night",
+          emoji: "🌙",
+          text: "moonlit night"
+        };
+      }
+    }
+
+    function updateClock() {
+      const now = new Date();
+
+      const hours = pad(now.getHours());
+      const minutes = pad(now.getMinutes());
+      timeEl.textContent = `${hours}:${minutes}`;
+
+      const date = now.toLocaleDateString("en-GB", {
+        weekday: "long",
+        day: "numeric",
+        month: "long"
+      });
+      dateEl.textContent = date;
+
+      const phase = getPhase(now.getHours());
+      document.body.className = phase.className;
+      phaseEmojiEl.textContent = phase.emoji;
+      phaseTextEl.textContent = phase.text;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
