@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Практика момента — MOON VEIL</title>
+<style>
+:root{--brown:#4A382D;--blue:#DCE3E8;--cream:#F2EEE8;--soft:#E8E6E3;--brown-soft:#75645A}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--brown);background:var(--cream)}
+body{display:flex;align-items:center;justify-content:center;padding:18px;background:radial-gradient(circle at 12% 10%,rgba(220,227,232,.95),transparent 38%),radial-gradient(circle at 92% 92%,rgba(74,56,45,.08),transparent 35%),var(--cream)}
+.card{width:min(900px,100%);border:1px solid rgba(74,56,45,.18);border-radius:28px;padding:28px 30px 24px;background:rgba(242,238,232,.88);box-shadow:0 18px 55px rgba(74,56,45,.10);backdrop-filter:blur(8px)}
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:20px}
+.eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--brown-soft);margin-bottom:8px}
+h1{font-size:clamp(25px,4vw,38px);line-height:1.08;margin:0;font-weight:650;letter-spacing:-.03em}
+.moon{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:var(--blue);font-size:25px;flex:0 0 auto;box-shadow:inset -9px -7px 0 rgba(74,56,45,.08)}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.pill{padding:7px 11px;border-radius:999px;background:var(--blue);font-size:13px;color:var(--brown)}
+.practice{font-family:Georgia,"Times New Roman",serif;font-size:clamp(18px,2.4vw,23px);line-height:1.55;margin:0;padding:20px 0 18px;border-top:1px solid rgba(74,56,45,.15);border-bottom:1px solid rgba(74,56,45,.15)}
+.bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:18px}
+.note{font-size:13px;line-height:1.4;color:var(--brown-soft)}
+a{color:var(--brown);text-decoration:none;border-bottom:1px solid rgba(74,56,45,.38);font-size:13px;white-space:nowrap}
+a:hover{border-bottom-color:var(--brown)}
+@media(max-width:620px){body{padding:10px}.card{padding:22px 20px 20px;border-radius:22px}.bottom{align-items:flex-start;flex-direction:column}.moon{width:44px;height:44px}}
+</style>
+</head>
+<body>
+<main class="card" aria-live="polite">
+  <div class="top">
+    <div>
+      <div class="eyebrow" id="periodLabel">Практика этого момента</div>
+      <h1 id="title">Загрузка практики…</h1>
+    </div>
+    <div class="moon" id="symbol">☾</div>
+  </div>
+  <div class="meta">
+    <span class="pill" id="duration"></span>
+    <span class="pill" id="state"></span>
+  </div>
+  <p class="practice" id="instruction"></p>
+  <div class="bottom">
+    <div class="note" id="note"></div>
+    <a id="link" target="_blank" rel="noopener noreferrer">Открыть полную практику ↗</a>
+  </div>
+</main>
+<script>
+const P={
+ breathing:{title:"Пять минут возвращения к дыханию",symbol:"🫧",minutes:5,state:"внутренний шум",url:"https://app.notion.com/p/39b6b9f999c8814fb5b9ed245e187099",text:"Сядь удобно и почувствуй опору тела. Пять минут следи за одним вдохом и одним выдохом. Каждый раз, когда замечаешь мысль, звук или ощущение, мягко возвращай внимание к дыханию. В конце спроси себя: «Что мне сейчас действительно нужно?»"},
+ body:{title:"Сканирование тела перед сном",symbol:"🌙",minutes:10,state:"напряжение · сон",url:"https://app.notion.com/p/39b6b9f999c8812287bcfecc5fc5d68b",text:"Ляг удобно и медленно проведи вниманием от лица и плеч к рукам, груди, животу, тазу и стопам. Ничего не заставляй расслабляться — просто замечай тепло, тяжесть и прикосновение ткани. В конце почувствуй всё тело целиком и скажи: «День закончился. Сейчас мне ничего не нужно решать»."},
+ one:{title:"Один осознанный вдох",symbol:"🌱",minutes:1,state:"мало ресурса",url:"https://app.notion.com/p/39b6b9f999c881308767e733e3b11240",text:"Остановись перед следующим действием. Почувствуй, на что опирается тело, и полностью проживи один вдох и один выдох. Затем спроси себя: «Я всё ещё хочу продолжать в том же темпе?» Этого уже достаточно."},
+ count:{title:"Счёт дыханий",symbol:"🫧",minutes:5,state:"рассеянность",url:"https://app.notion.com/p/39b6b9f999c8818480d6e2a51f72e96b",text:"После каждого выдоха считай от одного до десяти, затем начинай снова. Если потеряла счёт или ушла в мысли, спокойно вернись к одному. Последние три дыхания проведи без счёта, просто ощущая вдох и выдох."},
+ listen:{title:"Слушать пространство",symbol:"🎧",minutes:7,state:"напряжение · внимание",url:"https://app.notion.com/p/39b6b9f999c8814db5d3e919e43824bd",text:"Закрой глаза или смягчи взгляд. Сначала услышь самый близкий звук, затем звуки комнаты и самый далёкий звук вокруг. Не ищи идеальную тишину — замечай, как каждый звук появляется, меняется и исчезает."},
+ pause:{title:"Пауза между делами",symbol:"⏸️",minutes:3,state:"переключение",url:"https://app.notion.com/p/39b6b9f999c881be8e0adc11d549c558",text:"Перед новым делом остановись на три минуты. Сначала почувствуй стопы, ладони и челюсть, затем сделай несколько спокойных выдохов. Назови, что ты закончила, что начинаешь и какое качество хочешь взять с собой дальше."},
+ support:{title:"Почувствовать опору",symbol:"🪨",minutes:4,state:"тревога · опора",url:"https://app.notion.com/p/39b6b9f999c88121aa6ad3596ec39104",text:"Почувствуй стопы и ещё две поверхности, которые держат тело. На выдохе слегка надави стопами в пол, на вдохе отпусти усилие. Повтори пять раз и скажи: «Я здесь. Мне не нужно удерживать себя целиком одной»."},
+ need:{title:"Что мне сейчас нужно?",symbol:"🤍",minutes:6,state:"усталость · забота",url:"https://app.notion.com/p/39b6b9f999c881eebbd7cee2645384fa",text:"Сделай три спокойных дыхания и спроси себя: «Что происходит в теле? Какая эмоция ближе всего? Что поддержит меня в ближайшие полчаса?» Не ищи красивого ответа. Вода, еда, тишина, движение или пауза — уже достаточно честный ответ."},
+ here:{title:"Я здесь, прямо сейчас",symbol:"🏠",minutes:4,state:"тревога · настоящее",url:"https://app.notion.com/p/39b6b9f999c881a7b1aae68c3199ec72",text:"Посмотри вокруг и назови место, где находишься, три предмета, одну опору под телом и один звук. Затем скажи: «Сейчас я здесь. Мысль о будущем — это мысль, а не событие, происходящее в эту секунду»."},
+ senses:{title:"Пять чувств",symbol:"🖐️",minutes:5,state:"заземление",url:"https://app.notion.com/p/39b6b9f999c8818faeffce54f2cdaddc",text:"Найди пять вещей, которые видишь, четыре телесных ощущения, три звука, два запаха и один вкус. Не перечисляй механически — задержись на каждом пункте хотя бы на один вдох. В конце спроси: «Что изменилось хотя бы на один процент?»"},
+ exhale:{title:"Выдох чуть длиннее",symbol:"🌬️",minutes:6,state:"напряжение · дыхание",url:"https://app.notion.com/p/39b6b9f999c8815ebfbcf4ecce7c1fa4",text:"Несколько дыханий просто наблюдай естественный ритм. Затем вдыхай на четыре спокойных счёта, а выдыхай на шесть — мягко, без усилия и задержек. Повтори 8–10 раз. Если станет некомфортно, сразу вернись к обычному дыханию."},
+ close:{title:"Закрыть прожитый день",symbol:"🌒",minutes:7,state:"завершение дня",url:"https://app.notion.com/p/39b6b9f999c88170a0a7e5e18b39ded7",text:"Вспомни день тремя точками: что было живым, что оказалось тяжёлым и что осталось незавершённым. Не анализируй. Затем скажи: «Этот день уже прожит. Мне не нужно продолжать решать его прямо сейчас»."},
+ unfinished:{title:"Оставить незавершённое на завтра",symbol:"📦",minutes:8,state:"бессонница · мысли",url:"https://app.notion.com/p/39b6b9f999c88149b7a4f9a98d3f6974",text:"Назови каждую незавершённую мысль одним словом: «письмо», «деньги», «разговор», «планы». Мысленно положи её в коробку или на полку со словами: «Это важно, но сейчас не время решать. Я вернусь к этому завтра». В конце скажи: «На эту ночь достаточно»."},
+ candle:{title:"Созерцание свечи",symbol:"🕯️",minutes:10,state:"созерцание",url:"https://app.notion.com/p/39b6b9f999c88192b69cc2cf0548473a",text:"Поставь свечу на безопасную поверхность и мягко смотри на пламя. Замечай его форму, цвет, движение и тени вокруг. Когда появляются мысли, возвращай взгляд к одной детали огня. В конце закрой глаза и спроси: «Что во мне сейчас нуждается не в решении, а во внимании?»"},
+ temple:{title:"Внутренний храм",symbol:"🌌",minutes:12,state:"визуализация",url:"https://app.notion.com/p/39b6b9f999c8813c9d38e1b69f9a289d",text:"Закрой глаза и представь путь к своему внутреннему пространству тишины. Заметь вход, свет, воздух и место, где можно сесть. Останься там несколько минут и спроси: «Что мне важно услышать, когда вокруг становится тише?» Ответ может прийти словом, образом или не прийти совсем."},
+ question:{title:"Вопрос без немедленного ответа",symbol:"❔",minutes:8,state:"созерцание · ясность",url:"https://app.notion.com/p/39b6b9f999c8818ea664f8ad13f8a597",text:"Выбери один важный вопрос и произнеси его про себя только один раз. Затем несколько минут наблюдай дыхание, не вытаскивая ответ силой. В конце запиши то, что пришло естественно: слово, образ, ощущение или честное «пока не знаю»."},
+ bed:{title:"Пять минут в кровати",symbol:"🛏️",minutes:5,state:"сон · мало ресурса",url:"https://app.notion.com/p/39b6b9f999c88199908fd2033eb48af4",text:"Ляг удобно и почувствуй пять мест, где тело касается кровати. На каждом выдохе мысленно называй: лицо, плечи, живот, бёдра, стопы — и позволяй их весу чуть сильнее опуститься в матрас. Если приходят мысли о завтра, мягко отвечай: «Не сейчас»."},
+ feed:{title:"Вернуться после ленты",symbol:"📵",minutes:5,state:"рассеянность · внимание",url:"https://app.notion.com/p/39b6b9f999c881fa8f0ec6900035b06e",text:"Положи телефон экраном вниз. Десять секунд изучай один реальный предмет: цвет, свет, форму и текстуру. Затем почувствуй глаза, шею, ладони, дыхание и стопы. Спроси: «Что я собиралась делать до ленты?» — и выбери только одно следующее действие."},
+ work:{title:"Перед важной работой",symbol:"🎯",minutes:7,state:"собраться · внимание",url:"https://app.notion.com/p/39b6b9f999c881c3bca4dc4881ce2316",text:"Сядь на рабочем месте, но пока ничего не открывай. Сделай пять спокойных дыханий и назови одну задачу, один первый шаг и одно качество внимания. Например: «Сейчас я обрабатываю одну фотографию. Первый шаг — открыть исходник. Работаю внимательно, не торопясь»."},
+ palm:{title:"Ладонь на груди",symbol:"🫶",minutes:7,state:"тревога · поддержка",url:"https://app.notion.com/p/39b6b9f999c8812cb5faded747dcf129",text:"Положи ладонь на грудь, а вторую — на живот. Заметь тепло рук, давление и движение дыхания. На каждом выдохе повторяй одну честную фразу: «Я рядом», «Это действительно непросто» или «Мне не нужно отвергать себя сейчас». В конце спроси: «Какой самый бережный следующий шаг?»"}
+};
+const decks={
+ morning:[P.one,P.breathing,P.count,P.support,P.need,P.here,P.senses,P.feed,P.work,P.palm,P.listen],
+ day:[P.pause,P.work,P.feed,P.breathing,P.one,P.count,P.listen,P.support,P.need,P.here,P.senses,P.exhale,P.palm],
+ evening:[P.close,P.body,P.unfinished,P.candle,P.temple,P.question,P.bed,P.breathing,P.one,P.count,P.listen,P.support,P.need,P.here,P.senses,P.exhale,P.feed,P.palm],
+ night:[P.bed,P.body,P.close,P.unfinished,P.palm,P.exhale,P.here,P.senses,P.support]
+};
+const periods={
+ morning:{label:"Практика этого утра",note:"Утренняя колода · сменится после 14:00"},
+ day:{label:"Практика этого дня",note:"Дневная колода · сменится после 19:00"},
+ evening:{label:"Практика этого вечера",note:"Вечерняя колода · сменится после 23:00"},
+ night:{label:"Практика этой ночи",note:"Ночная колода · сменится после 06:00"}
+};
+function slotForHour(h){if(h>=6&&h<14)return"morning";if(h>=14&&h<19)return"day";if(h>=19&&h<23)return"evening";return"night"}
+function dayIndex(){const now=new Date();now.setHours(0,0,0,0);const start=new Date(2026,0,1);return Math.floor((now-start)/86400000)}
+function render(){const now=new Date();const slot=slotForHour(now.getHours());const deck=decks[slot];const idx=((dayIndex()%deck.length)+deck.length)%deck.length;const p=deck[idx];document.getElementById("periodLabel").textContent=periods[slot].label;document.getElementById("title").textContent=p.title;document.getElementById("symbol").textContent=p.symbol;document.getElementById("duration").textContent=p.minutes+" мин";document.getElementById("state").textContent=p.state;document.getElementById("instruction").textContent=p.text;document.getElementById("note").textContent=periods[slot].note+" · новая практика завтра";document.getElementById("link").href=p.url}
+render();setInterval(render,60000);
+</script>
+</body>
+</html>
